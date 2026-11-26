@@ -30,14 +30,19 @@ Use somente a chave publicável (`anon`/publishable) no frontend. Nunca coloque 
 
 ### Conta de demonstração sem banco
 
-É possível testar o painel do morador e todo o CRUD sem configurar o Supabase. Na tela de entrada, clique em **Entrar com conta de teste** ou use:
+É possível testar os painéis do morador e do funcionário sem configurar o Supabase. Na tela de entrada, escolha uma das contas de demonstração ou use:
 
 ```text
-E-mail: morador@teste.local
-Senha:  Teste@123
+Morador
+E-mail:      morador@teste.local
+Senha:       Teste@123
+
+Funcionário (categoria Elétrica)
+E-mail:      funcionario@teste.local
+Senha:       Teste@123
 ```
 
-Nesse modo, os chamados são armazenados somente no `localStorage` do navegador. Eles não são enviados ao Supabase e podem ser apagados ao limpar os dados do site. O modo de demonstração não substitui os testes de autenticação, RLS ou concorrência no banco real.
+Nesse modo, os chamados são compartilhados entre as duas contas por meio do `localStorage` do navegador. O morador pode abrir chamados, e o funcionário pode aceitar e concluir os chamados de Elétrica. Os dados não são enviados ao Supabase e podem ser apagados ao limpar os dados do site. O modo de demonstração não substitui os testes de autenticação, RLS ou concorrência no banco real.
 
 No Supabase SQL Editor, execute [supabase/schema.sql](supabase/schema.sql) para criar o contrato de referência, o gatilho de perfil, índices e políticas RLS. Em **Authentication > URL Configuration**, inclua a URL local e a URL da Vercel nos redirects permitidos.
 

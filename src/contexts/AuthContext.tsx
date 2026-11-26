@@ -1,7 +1,18 @@
 import type { Session } from '@supabase/supabase-js'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { supabase, supabaseConfigurado } from '../lib/supabase'
-import { DEMO_EMAIL, DEMO_SENHA, encerrarModoDemo, iniciarModoDemo, modoDemoAtivo, USUARIO_DEMO } from '../lib/demo'
+import {
+  DEMO_EMAIL,
+  DEMO_FUNCIONARIO_EMAIL,
+  DEMO_FUNCIONARIO_SENHA,
+  DEMO_SENHA,
+  encerrarModoDemo,
+  FUNCIONARIO_DEMO,
+  iniciarModoDemo,
+  modoDemoAtivo,
+  obterUsuarioDemoAtivo,
+  USUARIO_DEMO,
+} from '../lib/demo'
 import type { Usuario } from '../types'
 
 interface CadastroInput {
@@ -44,9 +55,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    if (modoDemoAtivo()) {
-      setSession({ user: { id: USUARIO_DEMO.auth_id } } as Session)
-      setUsuario(USUARIO_DEMO)
+    const usuarioDemo = obterUsuarioDemoAtivo()
+    if (usuarioDemo) {
+      setSession({ user: { id: usuarioDemo.auth_id } } as Session)
+      setUsuario(usuarioDemo)
       setCarregando(false)
       return
     }
@@ -73,10 +85,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function entrar(email: string, senha: string) {
-    if (email.toLowerCase() === DEMO_EMAIL && senha === DEMO_SENHA) {
-      iniciarModoDemo()
-      setSession({ user: { id: USUARIO_DEMO.auth_id } } as Session)
-      setUsuario(USUARIO_DEMO)
+    const emailNormalizado = email.toLowerCase()
+    const usuarioDemo = emailNormalizado === DEMO_EMAIL && senha === DEMO_SENHA
+      ? USUARIO_DEMO
+      : emailNormalizado === DEMO_FUNCIONARIO_EMAIL && senha === DEMO_FUNCIONARIO_SENHA
+        ? FUNCIONARIO_DEMO
+        : null
+    if (usuarioDemo) {
+      iniciarModoDemo(usuarioDemo)
+      setSession({ user: { id: usuarioDemo.auth_id } } as Session)
+      setUsuario(usuarioDemo)
       return
     }
     if (!supabaseConfigurado) throw new Error('Configure o Supabase antes de entrar.')

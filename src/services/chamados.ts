@@ -1,10 +1,14 @@
 import { exigirSupabaseConfigurado, supabase } from '../lib/supabase'
 import {
+  aceitarChamadoDemo,
   criarChamadoDemo,
   editarChamadoDemo,
   excluirChamadoDemo,
+  FUNCIONARIO_DEMO,
+  listarFilaDaEquipeDemo,
   listarChamadosDemo,
   LOCAIS_DEMO,
+  marcarComoFeitoDemo,
   modoDemoAtivo,
 } from '../lib/demo'
 import type { Chamado, ChamadoInput, LocalCondominio, StatusChamado } from '../types'
@@ -121,6 +125,7 @@ export async function listarFilaDaEquipe(
   funcionarioId: string,
   categoria: string,
 ): Promise<Chamado[]> {
+  if (modoDemoAtivo()) return listarFilaDaEquipeDemo(funcionarioId, categoria)
   exigirSupabaseConfigurado()
   const [disponiveis, assumidos] = await Promise.all([
     supabase
@@ -150,6 +155,7 @@ export async function listarFilaDaEquipe(
  * está Aberto e sem atendente. A segunda recebe uma lista vazia.
  */
 export async function aceitarChamado(id: string, funcionarioId: string): Promise<Chamado> {
+  if (modoDemoAtivo()) return aceitarChamadoDemo(id, { ...FUNCIONARIO_DEMO, id: funcionarioId })
   exigirSupabaseConfigurado()
   const { data, error } = await supabase
     .from('Chamado')
@@ -167,6 +173,7 @@ export async function aceitarChamado(id: string, funcionarioId: string): Promise
 }
 
 export async function marcarComoFeito(id: string, funcionarioId: string): Promise<Chamado> {
+  if (modoDemoAtivo()) return marcarComoFeitoDemo(id, funcionarioId)
   exigirSupabaseConfigurado()
   const { data, error } = await supabase
     .from('Chamado')

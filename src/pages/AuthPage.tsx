@@ -5,7 +5,12 @@ import { Alert } from '../components/Feedback'
 import { Logo } from '../components/Logo'
 import { useAuth } from '../contexts/AuthContext'
 import { supabaseConfigurado } from '../lib/supabase'
-import { DEMO_EMAIL, DEMO_SENHA } from '../lib/demo'
+import {
+  DEMO_EMAIL,
+  DEMO_FUNCIONARIO_EMAIL,
+  DEMO_FUNCIONARIO_SENHA,
+  DEMO_SENHA,
+} from '../lib/demo'
 
 export function AuthPage() {
   const { session, entrar, cadastrar } = useAuth()
@@ -40,13 +45,13 @@ export function AuthPage() {
     }
   }
 
-  async function entrarComoDemo() {
+  async function entrarComoDemo(email = DEMO_EMAIL, senha = DEMO_SENHA) {
     setErro('')
     setSucesso('')
     setEnviando(true)
-    setForm((atual) => ({ ...atual, email: DEMO_EMAIL, senha: DEMO_SENHA }))
+    setForm((atual) => ({ ...atual, email, senha }))
     try {
-      await entrar(DEMO_EMAIL, DEMO_SENHA)
+      await entrar(email, senha)
     } catch (error) {
       setErro(error instanceof Error ? error.message : 'Não foi possível iniciar a demonstração.')
     } finally {
@@ -105,10 +110,19 @@ export function AuthPage() {
             <button className="button button-primary button-wide" disabled={enviando}>{enviando ? 'Aguarde...' : modo === 'entrar' ? 'Entrar' : 'Criar conta'}</button>
           </form>
           {modo === 'entrar' && <div className="demo-box">
-            <div><strong>Conta de demonstração</strong><span>Funciona sem banco de dados</span></div>
-            <code>{DEMO_EMAIL}</code>
-            <code>{DEMO_SENHA}</code>
-            <button className="button button-secondary button-wide" onClick={entrarComoDemo} disabled={enviando}>Entrar com conta de teste</button>
+            <div className="demo-heading"><strong>Contas de demonstração</strong><span>Funcionam sem banco de dados</span></div>
+            <div className="demo-account">
+              <div><strong>Morador</strong><span>Abre e acompanha chamados</span></div>
+              <code>{DEMO_EMAIL}</code>
+              <code>{DEMO_SENHA}</code>
+              <button className="button button-secondary button-wide" onClick={() => entrarComoDemo()} disabled={enviando}>Entrar como morador</button>
+            </div>
+            <div className="demo-account">
+              <div><strong>Funcionário · Elétrica</strong><span>Aceita e conclui atendimentos</span></div>
+              <code>{DEMO_FUNCIONARIO_EMAIL}</code>
+              <code>{DEMO_FUNCIONARIO_SENHA}</code>
+              <button className="button button-secondary button-wide" onClick={() => entrarComoDemo(DEMO_FUNCIONARIO_EMAIL, DEMO_FUNCIONARIO_SENHA)} disabled={enviando}>Entrar como funcionário</button>
+            </div>
           </div>}
           <p className="auth-switch">{modo === 'entrar' ? 'Ainda não tem uma conta?' : 'Já possui uma conta?'} <button onClick={() => { setModo(modo === 'entrar' ? 'cadastrar' : 'entrar'); setErro(''); setSucesso('') }}>{modo === 'entrar' ? 'Cadastre-se' : 'Entrar'}</button></p>
         </div>
